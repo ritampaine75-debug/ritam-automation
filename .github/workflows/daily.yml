@@ -3,6 +3,7 @@ name: Mobile Automation Email
 on:
   repository_dispatch:
     types: [mobile_trigger]
+  workflow_dispatch: # This enables the manual button
 
 jobs:
   send_mail:
@@ -16,15 +17,10 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
       - name: Run automation script
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
-          VIDEO_URL: ${{ github.event.client_payload.video_url }}
-          USER_MESSAGE: ${{ github.event.client_payload.message }}
+          VIDEO_URL: ${{ github.event.client_payload.video_url || 'No URL' }}
+          USER_MESSAGE: ${{ github.event.client_payload.message || 'Manual test' }}
         run: python main.py
